@@ -1,0 +1,42 @@
+<body>
+<form action="/login" method="POST" id="login-form">
+    <div class=flex-container>
+        <label for=username>Username: </label>
+        <input type=text id=username name=username>
+    </div>
+    <div class=flex-container>
+        <label for=username>Password: </label>
+        <input type=text id=password name=password>
+    </div>
+    <div class=flex-container>
+        <button type=submit form="login-form" value="Submit">Login</button>
+    </div>
+</form>
+</body>
+
+<style>
+
+    body {
+        width: 100%;
+        display: flex;
+        align-items: top;
+        height: 100%;
+        justify-content: center;
+    }
+
+    form {
+        position: relative;
+        display: flex;
+        height: 200px;
+        width: 300px;
+        padding: 50px;
+        flex-direction: column;
+        background-color: blue;
+        align-items: center;
+        justify-content: top;
+    }
+    
+    .flex-container {
+        height: 50px;
+    }
+</style>
