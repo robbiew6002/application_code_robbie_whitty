@@ -35,3 +35,12 @@ def logout():
         return redirect(url_for('index'))
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/assets')
+def display_assets():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+    response = supabase.table("devices").select("hostname, device_types(name), statuses(value)" ).eq("customer_id", session['customer_id']).execute()
+    assets = response.data
+    print("Assets:", assets)
+    return render_template("assets.html", assets=assets)

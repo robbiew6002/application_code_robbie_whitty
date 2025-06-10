@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>Your Asset Page</title>
+</head>
+
+{% include 'navbar.html' %}
+<div id="page">
+    <div id="header">
+        <h1>View Assets</h1>
+        <p>Here you can view all your assets</p>
+    </div>
+    {% if assets %}
+    <div id="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Asset Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr>
+                    <td>{{ asset.hostname }}</td>
+                    <td>{{ asset.device_types.name }}</td>
+                    <td>{{ asset.statuses.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div id="content">
+        <p>Welp, looks like you don't have any assets.</p>
+    </div>
+    {% endif %}
+</div>
