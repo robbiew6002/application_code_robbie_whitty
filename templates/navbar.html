@@ -1,3 +1,31 @@
+{% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
+<nav>
+    <a href="/">Home</a>
+    <a href="/assets">View All Assets</a>
+    <a href="/search">Search Assets</a>
+    <a href="/customers">View Customers</a>
+    <a href="/create">Create new record</a>
+    <a href="/logout" method="post">Logout</a>
+</nav>
+
+<style>
+    nav {
+        width:100%;
+        height:50px;
+        background-color: orange;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        
+    }
+    
+    nav > a {
+        width: calc(100/6);
+        text-align: center;
+    }
+</style>
+{% else %}
 <nav>
     <a href="/">Home</a>
     <a href="/assets">View All Assets</a>
@@ -23,3 +51,4 @@
         text-align: center;
     }
 </style>
+{% endif %}
