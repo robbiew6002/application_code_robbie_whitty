@@ -26,3 +26,8 @@ def home():
     else:
         print("session:", session)
         return render_template("home.html")
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
