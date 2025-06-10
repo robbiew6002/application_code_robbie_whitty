@@ -1,3 +1,5 @@
+#This is the main application file that sets up the Flask app and routes.
+
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
@@ -14,20 +16,22 @@ def index():
 @app.route('/login', methods=['POST'])
 def do_admin_login():
     if not session.get('logged_in'):
-        authentication = check_credentials(request.form)
+        check_credentials(request.form)
     if session.get('logged_in'):
         return redirect(url_for('home'))
-    return index()
+    return redirect(url_for('index'))
 
 @app.route('/home')
 def home():
     if not session.get('logged_in'):
-        return index()
+        return redirect(url_for('index'))
     else:
         print("session:", session)
         return render_template("home.html")
 
 @app.route('/logout')
 def logout():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
     session.clear()
     return redirect(url_for('index'))
