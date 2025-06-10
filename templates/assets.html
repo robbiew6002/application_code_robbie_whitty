@@ -7,7 +7,11 @@
 <div id="page">
     <div id="header">
         <h1>View Assets</h1>
-        <p>Here you can view all your assets</p>
+        {% if session['auth_level'] == 1 or session['auth_level'] == 2%}
+        <p>Here you can view assets for all customers</p>
+        {% else %}
+        <p>Here you can view your assets</p>
+        {% endif %}
     </div>
     {% if assets %}
     <div id="content">
@@ -17,6 +21,9 @@
                     <th>Hostname</th>
                     <th>Asset Type</th>
                     <th>Status</th>
+                    {% if assets[0].customers %}
+                    <th>Customer</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +32,9 @@
                     <td>{{ asset.hostname }}</td>
                     <td>{{ asset.device_types.name }}</td>
                     <td>{{ asset.statuses.value }}</td>
+                    {% if asset.customers %}
+                    <td>{{ asset.customers.customer_name }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
