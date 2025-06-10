@@ -1,0 +1,104 @@
+<html>
+<head>
+    <title>Create New Record</title>
+</head>
+{% include 'navbar.html' %}
+<div id="page">
+    <div id="header">
+        <h1>Create New Record</h1>
+        <p>Use the form below to create a new record</p>
+    </div>
+    <div id = forms>
+    <div id="asset-form">
+        <h3>Create Asset</h3>
+        <form method="POST" action="/create/asset">
+            <label for="hostname">Hostname:</label>
+            <input type="text" id="hostname" name="hostname" required>
+
+            <label for="type_id">Asset Type:</label>
+            <select id="type_id" name="type_id" required>
+                {% for type in device_types %}
+                <option value="{{ type.id }}">{{ type.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="status_id">Status:</label>
+            <select id="status_id" name="status_id" required>
+                {% for status in statuses %}
+                <option value="{{ status.id }}">{{ status.value }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Create Asset</button>
+        </form>
+    </div>
+    <div id="customer-form">
+        <h3>Create Customer</h3>
+        <form method="POST" action="/create/customer">
+            <label for="customer_name">Name:</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+
+            <label for="teir">Teir:</label>
+            <input type="number" id="teir" name="teir" required>
+
+            <button type="submit">Create Customer</button>
+        </form>
+    </div>
+    </div>
+</div>
+</html>
+
+<style>
+    #forms {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    #asset-form, #customer-form {
+        width: 40%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        height: 300px
+    }
+
+    #asset-form form, #customer-form form {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: space-around; 
+        height: 100%
+    }
+
+    #asset-form label, #customer-form label {
+        margin-bottom: 5px;
+    }
+
+    #asset-form input, 
+    #asset-form select, 
+    #customer-from input, 
+    #customer-form select{
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    #asset-form button,
+    #customer-form button {
+        padding: 10px;
+        background-color: orange;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #asset-form button:hover,
+    #customer-form button:hover {
+        background-color: darkorange;
+    }
+
+</style>

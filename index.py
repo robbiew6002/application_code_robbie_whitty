@@ -73,7 +73,9 @@ def create():
     if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
         return redirect(url_for('index'))
     if request.method == 'GET':
-        return render_template("create.html")
+        return render_template("create.html", customers=supabase.table("customers").select("customer_name").execute().data,
+                             device_types=supabase.table("device_types").select("name").execute().data,
+                             statuses=supabase.table("statuses").select("value").execute().data)
     if request.method == 'POST':
         # Here you would handle the creation of a new asset or customer
         # For now, we just redirect to the home page
