@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Search Customers</title>
+</head>
+{% include 'navbar.html' %}
+<div id="page">
+    <div id="header">
+        <h1>Search Customers</h1>
+        <p>Here you can search for assets across all customers. Or leave both fields blank to return all.</p>
+    </div>
+    <div id="content">
+        <form method="POST" action="/customers">
+            <input type="text" name="customer_name" placeholder="Customer Name">
+            <input type="text" name="teir" placeholder="Customer Tier">
+            <button type="submit">Search</button>
+        </form>
+        {% if results %}
+        <h2>Search Results:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Teir</th>
+                    <th>Number of Devices</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in results %}
+                <tr>
+                    <td>{{ customer.customer_name }}</td>
+                    <td>{{ customer.teir }}</td>
+                    <td>{{ customer.device_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No results found.</p>
+        {% endif %}
+    </div>
+</html>
