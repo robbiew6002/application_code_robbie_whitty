@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>Asset {{ asset.hostname }}</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    {% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
+    <div id="page">
+        <h3>View or Edit Asset Details</h3>
+        <form id="asset-container">
+            <input type="text" name="hostname" placeholder="{{ asset.hostname }}">
+        </form>
+    </div>
+    {% else %}
+    <div id="page">
+        <p> This is the page for asset {{asset.hostname}}</p>
+    </div>
+    {% endif %}
+</body>
+
+<style>
+    
+    input::placeholder {
+        opacity: 1;
+        color: black
+    }
+
+</style>
+
+</html>

@@ -29,7 +29,7 @@
             <tbody>
                 {% for asset in assets %}
                 <tr>
-                    <td>{{ asset.hostname }}</td>
+                    <td><a href="/assets/{{ asset.id }}">{{ asset.hostname }}</a></td>
                     <td>{{ asset.device_types.name }}</td>
                     <td>{{ asset.statuses.value }}</td>
                     {% if asset.customers %}
