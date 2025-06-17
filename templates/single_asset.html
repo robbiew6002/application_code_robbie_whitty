@@ -4,7 +4,6 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-    {% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
     <div id="page">
         <h3>View or Edit Asset Details</h3>
         <form id="asset-container" method="POST" action="/assets/{{asset.id}}">
@@ -42,28 +41,6 @@
             <button type="submit">Update</button>
         </form>
     </div>
-    {% else %}
-    <div id="page">
-        <div id="content">
-        <table>
-            <thead>
-                <tr>
-                    <th>Hostname</th>
-                    <th>Asset Type</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ asset.hostname }}</td>
-                    <td>{{ asset.device_types.name }}</td>
-                    <td>{{ asset.statuses.value }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
-    {% endif %}
 </body>
 
 <style>

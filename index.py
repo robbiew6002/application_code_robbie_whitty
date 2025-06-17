@@ -98,7 +98,7 @@ def create_customer():
 
 @app.route('/assets/<asset_id>', methods=['GET', 'POST'])
 def single_asset(asset_id):
-    if not session.get('logged_in'):
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
         return redirect(url_for('index'))
     asset_details=return_asset_by_id(asset_id)
     if request.method == 'GET':
