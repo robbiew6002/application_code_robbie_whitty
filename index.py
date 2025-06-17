@@ -3,7 +3,7 @@
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
-from search import search_assets, search_customers, return_asset_by_id 
+from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id
 from create import add_asset_to_database, add_customer_to_database
 from update import update_asset
 app = Flask(__name__)
@@ -111,3 +111,17 @@ def single_asset(asset_id):
     if request.method == 'POST':
         asset_details=update_asset(asset_details["id"], request.form)
         return redirect(f"/assets/{asset_id}")
+
+@app.route('/customers/<customer_id>', methods=['GET', 'POST'])
+def single_customer(customer_id):
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
+        return redirect(url_for('index'))
+    customer_details=return_customer_by_id(customer_id)
+    if request.method == 'GET':
+        if not customer_details:
+            return redirect(url_for('customers'))
+        print(customer_details)
+        return render_template("single_customer.html", customer=customer_details)
+    if request.method == 'POST':
+        customer_details=update_customer(customer_details["id"], request.form)
+        return redirect(f"/customers/{customer_id}")

@@ -81,3 +81,12 @@ def return_asset_by_id(asset_id):
     if len(asset_details.data) > 0:
         return asset_details.data[0]
     return None
+
+def return_customer_by_id(customer_id):
+    if session['auth_level'] == 1 or session['auth_level'] == 2:
+        customer_details=supabase.table("customers").select('*').eq('id', customer_id).execute()
+    else:
+        return None
+    if len(customer_details.data) > 0:
+        return customer_details.data[0]
+    return None

@@ -27,7 +27,7 @@
             <tbody>
                 {% for customer in results %}
                 <tr>
-                    <td>{{ customer.customer_name }}</td>
+                    <td><a href="/customers/{{  customer.id  }}">{{ customer.customer_name }}</a></td>
                     <td>{{ customer.teir }}</td>
                     <td>{{ customer.device_count }}</td>
                 </tr>
