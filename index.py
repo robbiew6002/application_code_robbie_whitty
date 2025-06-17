@@ -4,9 +4,9 @@ from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
 from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id
-from create import add_asset_to_database, add_customer_to_database
+from create import add_asset_to_database, add_customer_to_database, add_user_to_database
 from update import update_asset, update_customer, update_user
-from delete import delete_asset_by_id, delete_customer_by_id
+from delete import delete_asset_by_id, delete_customer_by_id, delete_user_by_id
 
 app = Flask(__name__)
 app.secret_key='56ca809dc0b69a58c4d278ee41b44da5ea645163ec7d3a0ab9a1c37f63aec318d0f775ce8a11e5e336ac6023132bdf242453ed1bb12c8bfac6584f2c77d3d04de8a4149eb29b5f93a8042a397b0143623b3097a6a0d6fe8b0e94fd41f6b9c61d323e82cdcea7c7ddca9eb3460acfa1bc34fa3fd09bd82758a6201172a8479925c2518e014d03230ac75c3889adafae1f43245ceb8aefa488966611066d14854bb1b1cf492fd345b20e533e63688f6ab0c442f104557b1d299981a6a7f9ca3e08985c5623c340147e7ba9cfbb8310ce9ced434c2a4b49d781cbbfe1a7d9ddaea83bb24b5c73cdef0a8773cf2a6265bad46fab6d6ecfa0992dc2fd70b887f32267'
@@ -85,18 +85,14 @@ def create_asset():
     if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
         return redirect(url_for('index'))
     new_asset=add_asset_to_database(request.form)
-    return render_template("create.html", customers=supabase.table("customers").select("id", "customer_name").execute().data,
-                        device_types=supabase.table("device_types").select("id", "name").execute().data,
-                        statuses=supabase.table("statuses").select("id", "value").execute().data, asset_created=new_asset)
+    return redirect(f"/assets/{new_asset['id']}")
 
 @app.route('/create/customer', methods=['POST'])
 def create_customer():
     if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
         return redirect(url_for('index'))
     new_customer=add_customer_to_database(request.form)
-    return render_template("create.html", customers=supabase.table("customers").select("id", "customer_name").execute().data,
-                        device_types=supabase.table("device_types").select("id", "name").execute().data,
-                        statuses=supabase.table("statuses").select("id", "value").execute().data, customer_created=new_customer)
+    return redirect(f"/customers/{new_customer['id']}")
 
 @app.route('/assets/<asset_id>', methods=['GET', 'POST'])
 def single_asset(asset_id):
@@ -116,17 +112,12 @@ def single_asset(asset_id):
         update_asset(asset_details["id"], request.form)
         return redirect(f"/assets/{asset_id}")
 
-@app.route('/assets/<asset_id>/delete', methods=['GET','POST'])
+@app.route('/assets/<asset_id>/delete', methods=['POST'])
 def delete_asset(asset_id):
     if not session.get('logged_in'):
         return redirect(url_for('index'))
     if (session['auth_level'] != 2 and session['auth_level'] != 1):
         return redirect(url_for('display_assets'))
-    if request.method == 'GET':
-        return (redirect(f'/assets/{asset_id}'))
-    print(request.form)
-    if not request.form: ## Handle unverified
-        print("data_empty")
     if request.form:
         delete_asset_by_id(asset_id)
         return (redirect('/assets'))
@@ -148,14 +139,10 @@ def single_customer(customer_id):
         update_customer(customer_details["id"], request.form)
         return redirect(f"/customers/{customer_id}")
 
-@app.route('/customers/<customer_id>/delete', methods=['GET','POST'])
+@app.route('/customers/<customer_id>/delete', methods=['POST'])
 def delete_customer(customer_id):
-    if not session.get('logged_in'):
+    if not session.get('logged_in') or (session["auth_level"] != 1 and session["auth_level"] != 2):
         return redirect(url_for('index'))
-    if (session['auth_level'] != 2 and session['auth_level'] != 1):
-        return redirect(url_for('customers'))
-    if request.method == 'GET':
-        return (redirect(f'/customers/{customer_id}'))
     print(request.form)
     if request.form:
         delete_customer_by_id(customer_id)
@@ -195,6 +182,20 @@ def create_user():
     if not session.get('logged_in') or session['auth_level'] != 1:
         return redirect(url_for('index'))
     if request.method == 'GET':
-        return
+        return render_template("create_user.html", 
+        customers=supabase.table("customers").select("id", "customer_name").execute().data)
     if request.method == 'POST':
-        return
+        user_details=add_user_to_database(request.form)
+        return redirect(f"/users/{user_details['id']}")
+        
+
+@app.route('/users/<user_id>/delete', methods=["POST"])
+def delete_user(user_id):
+    if not session.get('logged_in') and session['auth_level'] != 1:
+        return redirect(url_for('index'))
+    print(request.form)
+    if request.form:
+        delete_user_by_id(user_id)
+        return (redirect('/users'))
+    return (redirect(f'/users/{user_id}'))
+    

@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Create new user</title>
+    </head>
+    <body>
+        <div id="page">
+            {% include 'navbar.html' %}
+            <div id="heading">
+                <h3>Create New User</h3>
+            </div>
+            <div id="create-user-form">
+                <h3>Create User</h3>
+                <form method="POST" action="/users/create">
+                    <label for="username">Username:</label>
+                    <input type="email" id="username" name="username" required>
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" required>
+                    <label for="customer_id">Customer</label>
+                    <select id="customer_id" name="customer_id" required>
+                        {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="auth_level">Authorization Level</label>
+                    <input name="auth_level" type="number" required>
+                    <button type="submit">Create User</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

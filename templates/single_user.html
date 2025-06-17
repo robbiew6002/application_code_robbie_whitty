@@ -43,7 +43,7 @@
         <div id="delete-popup">
             <button onClick="hideDeletePopup()">Close</button>
             <h4>Are you sure you wish to delete?</h4>
-            <form id="asset-delete-form" method="POST" action="/users/{{user.id}}/delete">
+            <form id="asset-delete-form" method="POST" action="/users/{{ user.id }}/delete">
                 <label for="verify">Check To verfy:</label>
                 <input type="checkbox" name="verify" required>
                 <button type="submit">Delete</button>
