@@ -7,13 +7,61 @@
     {% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
     <div id="page">
         <h3>View or Edit Asset Details</h3>
-        <form id="asset-container">
+        <form id="asset-container" method="POST" action="/assets/{{asset.id}}">
             <input type="text" name="hostname" placeholder="{{ asset.hostname }}">
+            <label for="type_id">Asset Type:</label>
+            <select id="type_id" name="type_id" selected="{{asset.type_id}}"required>
+                {% for type in device_types %}
+                {% if type.id == asset.type_id %}
+                <option value="{{ type.id }}" selected>{{ type.name }}</option>
+                {% else %}
+                <option value="{{ type.id }}" >{{ type.name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <label for="status_id">Status:</label>
+            <select id="status_id" name="status_id" selected="{{asset.status_id}}" required>
+                {% for status in statuses %}
+                {% if status.id == asset.status_id %}
+                <option value="{{ status.id }}" selected>{{ status.value }}</option>
+                {% else %}
+                <option value="{{ status.id }}">{{ status.value }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <label for="customer_id">Customer</label>
+            <select id="customer_id" name="customer_id" selected="{{asset.customer_id}}"required>
+                {% for customer in customers %}
+                {% if customer.id == asset.customer_id %}
+                <option  value="{{ customer.id }}" selected>{{ customer.customer_name }}</option>
+                {% else %}
+                <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Update</button>
         </form>
     </div>
     {% else %}
     <div id="page">
-        <p> This is the page for asset {{asset.hostname}}</p>
+        <div id="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Asset Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ asset.hostname }}</td>
+                    <td>{{ asset.device_types.name }}</td>
+                    <td>{{ asset.statuses.value }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     </div>
     {% endif %}
 </body>
