@@ -90,3 +90,23 @@ def return_customer_by_id(customer_id):
     if len(customer_details.data) > 0:
         return customer_details.data[0]
     return None
+
+def return_users(search_dict):
+    if search_dict == None:
+        users=supabase.table("users").select('*, customers(customer_name)').execute().data
+        return users
+    else:
+        search_dict = dict(search_dict)
+        search_array = []
+    for item in search_dict:
+        if search_dict[item]:
+            search_array.append(item)
+    if len(search_array) == 0:
+        user_response = supabase.table("users").select("*,customers(customer_name)").execute()
+    if len(search_array) == 1:
+        user_response = supabase.table("users").select("*,customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).execute()
+    if len(search_array) == 2:
+        user_response = supabase.table("users").select("*,customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).execute()
+    if user_response.data is None:
+        return None
+    return user_response.data

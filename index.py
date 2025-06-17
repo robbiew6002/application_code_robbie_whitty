@@ -3,7 +3,7 @@
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
-from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id
+from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users
 from create import add_asset_to_database, add_customer_to_database
 from update import update_asset, update_customer
 from delete import delete_asset_by_id, delete_customer_by_id
@@ -160,3 +160,16 @@ def delete_customer(customer_id):
         delete_customer_by_id(customer_id)
         return (redirect('/customers'))
     return (redirect(f'/customers/{customer_id}'))
+
+@app.route('/users', methods=['GET', 'POST'])
+def users():
+    if not session.get('logged_in') or session['auth_level'] != 1:
+       return redirect(url_for('index'))
+    if request.method == 'GET':
+        search_dict=None
+        user_array=return_users(search_dict)
+        return render_template("user_management.html",users=user_array)
+    if request.method == 'POST':
+        search_dict=request.form
+        user_array=return_users(search_dict)
+        return render_template("user_management.html",users=user_array)

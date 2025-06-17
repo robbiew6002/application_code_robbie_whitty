@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>User Management</title>
+    </head>
+    <body>
+        <div id="page">
+            {% include 'navbar.html' %}
+            <div id="heading">
+                <h2>User Management</h2>
+                <h4>Create or View users</h4>
+            </div>
+            <div id="Search_for_users">
+            <form method="POST" action="/users">
+                <input type="number" name="id" placeholder="User Id">
+                <input type="text" name="username" placeholder="Username">
+                <input type="text" name="customer" placeholder="Customer">
+                <input type="number" name="auth_level" placeholder="auth_level">
+                <button type="submit">Search</button>
+        </form>
+            {% if users %}
+            <table>
+            <thead>
+                <tr>
+                    <th>User Id</th>
+                    <th>Username</th>
+                    <th>Customer</th>
+                    <th>Authorization Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><a href="/user/{{ user.id }}">{{ user.id }}</a></td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.customers.customer_name }}</td>
+                    <td>{{user.auth_level}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No users found</p>
+            {% endif %}
+            </div>
+            <div>
+                <a href="/users/create"><button>Create New User</button></a>
+            </div>
+        </div>
+    </body>
+</html>

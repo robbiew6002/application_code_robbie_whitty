@@ -5,7 +5,7 @@
     <a href="/search">Search Assets</a>
     <a href="/customers">View Customers</a>
     <a href="/create">Create new record</a>
-    <a href="/settings"></a>
+    <a href="/users">User Management</a>
     <a href="/logout" method="post">Logout</a>
 </nav>
 
@@ -26,7 +26,7 @@
         text-align: center;
     }
 </style>
-{% if session['auth_level'] == 2 %}
+{% elif session['auth_level'] == 2 %}
 <nav>
     <a href="/">Home</a>
     <a href="/assets">View All Assets</a>
