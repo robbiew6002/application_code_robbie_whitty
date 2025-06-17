@@ -4,6 +4,25 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-    <p>This will be the page for {{customer.customer_name}}</p>
+        <div id="page">
+        <h3>{{customer.customer_name}}</h3>
+        <form id="customer-container" method="POST" action="/customers/{{customer.id}}">
+            <input type="text" name="customer_name" placeholder="{{ customer.customer_name }}">
+            <label for="teir">Teir:</label>
+            <input type="number" id="teir" name="teir" placeholder="{{customer.teir}}">
+            </select>
+            <button type="submit">Update</button>
+        </form>
+    </div>
 </body>
+
+<style>
+    
+    input::placeholder {
+        opacity: 1;
+        color: black
+    }
+
+</style>
+
 </html>
