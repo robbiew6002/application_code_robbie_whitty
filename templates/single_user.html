@@ -1,0 +1,75 @@
+<script>
+    function showDeletePopup() {
+        document.getElementById('delete-popup').style.display = 'block';
+
+    }
+
+    function hideDeletePopup() {
+        document.getElementById('delete-popup').style.display = 'none';
+
+    }
+</script>
+
+<html>
+<head>
+    <title>User {{ user.id }}</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div id="page">
+        <div id="form-container">
+        <h3>View or Edit User Details</h3>
+        <form id="user-form" method="POST" action="/users/{{user.id}}">
+            <p>User id: {{user.id}}</p>
+            <input type="email" name="username" placeholder="{{ user.username }}">
+            <label for="customer_id">Customer</label>
+            <select id="customer_id" name="customer_id" selected="{{user.customer_id}}"required>
+                {% for customer in customers %}
+                {% if customer.id == user.customer_id %}
+                <option  value="{{ customer.id }}" selected>{{ customer.customer_name }}</option>
+                {% else %}
+                <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <label for="auth_level">Authorization Level</label>
+            <input type="number" name="auth_level" placeholder="{{user.auth_level}}">
+            <button type="submit">Update</button>
+        </form>
+        </div>
+        <div id="delete-button-container">
+            <button onclick="showDeletePopup()">Delete</button>
+        </div>
+        <div id="delete-popup">
+            <button onClick="hideDeletePopup()">Close</button>
+            <h4>Are you sure you wish to delete?</h4>
+            <form id="asset-delete-form" method="POST" action="/users/{{user.id}}/delete">
+                <label for="verify">Check To verfy:</label>
+                <input type="checkbox" name="verify" required>
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+<style>
+    
+    input::placeholder {
+        opacity: 1;
+        color: black
+    }
+
+    #delete-popup {
+        display: none;
+        position: fixed;
+        border: 1pt black;
+        background-color: grey;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+    }
+
+</style>
+
+</html>

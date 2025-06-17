@@ -5,7 +5,8 @@ from supabaseClient import supabase
 def update_asset(asset_id,asset_details):
     current_details=supabase.table("devices").select('*').eq('id', asset_id).execute().data[0]
     if asset_details["hostname"]:
-        response=supabase.table("devices").update({"hostname":asset_details["hostname"]}).eq('id', asset_id).execute()
+        if asset_details["hostname"] != current_details["hostname"]:
+            response=supabase.table("devices").update({"hostname":asset_details["hostname"]}).eq('id', asset_id).execute()
     if int(asset_details["type_id"]) != current_details["type_id"]:
         response=supabase.table("devices").update({"type_id":int(asset_details["type_id"])}).eq('id', asset_id).execute()
     if int(asset_details["customer_id"]) != current_details["customer_id"]:
@@ -13,16 +14,27 @@ def update_asset(asset_id,asset_details):
     if int(asset_details["status_id"]) != current_details["status_id"]:
         response=supabase.table("devices").update({"status_id":int(asset_details["status_id"])}).eq('id', asset_id).execute()
     print(response)
-    return response.data[0]
+    return
 
 def update_customer(customer_id, customer_details):
-    print("function running")
-    print(customer_details)
     current_details=supabase.table("customers").select('*').eq('id', customer_id).execute().data[0]
-    print(current_details)
     if customer_details["customer_name"]:
-        response=supabase.table("customers").update({"customer_name":customer_details["customer_name"]}).eq('id', customer_id).execute()
+        if customer_details["customer_name"] != current_details["customer_name"]:
+            response=supabase.table("customers").update({"customer_name":customer_details["customer_name"]}).eq('id', customer_id).execute()
     if int(customer_details["teir"]) != current_details["teir"]:
         response=supabase.table("customers").update({"teir":int(customer_details["teir"])}).eq('id', customer_id).execute()
-    print(response)
-    return None
+    return 
+
+def update_user(user_id, user_details):
+    current_details=supabase.table("users").select('*').eq("id", user_id).execute().data[0]
+    if user_details["username"]:
+        if user_details["username"] != current_details["username"]:
+            response=supabase.table("users").update({"username":user_details["username"]}).eq('id', user_id).execute()
+    if user_details["customer_id"]:
+        if int(user_details["customer_id"]) != current_details["customer_id"]:
+            response=supabase.table("users").update({"customer_id":int(user_details["customer_id"])}).eq('id', user_id).execute()
+    if user_details["auth_level"]:
+        if int(user_details["auth_level"]) != current_details["auth_level"]:
+            response=supabase.table("users").update({"auth_level":int(user_details["auth_level"])}).eq('id', user_id).execute()
+    return
+
