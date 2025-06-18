@@ -26,33 +26,61 @@ def return_customer_id(customer_name):
         return None
 
 def search_assets(search_dict):
-    search_dict=dict(search_dict)
-    if search_dict['status_id']:
-        search_dict['status_id'] = return_status_id(search_dict['status_id'])
-    if search_dict['type_id']:
-        search_dict['type_id'] = return_device_type_id(search_dict['type_id'])
-    if session['auth_level'] == 1 or session['auth_level'] == 2:
-        if search_dict['customer_id'] :
-            search_dict['customer_id'] = return_customer_id(search_dict['customer_id'])
-    elif session['auth_level'] != 1 and session['auth_level'] != 2:
-        search_dict['customer_id'] = session['customer_id']
-    search_array=[]
-    print("Search Dictionary:", search_dict)
+    search_dict = dict(search_dict)
+    search_array = []
     for item in search_dict:
         if search_dict[item]:
             search_array.append(item)
-    if len(search_array) == 0:
-        return []
-    if len(search_array) == 1:
-        response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).execute()
-        print(response)
-    if len(search_array) == 2:
-        response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).execute()
-        print(response)
-    if len(search_array) == 3:
-        response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).execute()
-        print(response)
-    return response.data if response.data else None
+    if session["auth_level"] == 1 or session["auth_level"] == 2:
+        if len(search_array) == 0:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value), customers(customer_name)").execute()
+        if len(search_array) == 1:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).execute()
+        if len(search_array) == 2:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).execute()
+        if len(search_array) == 3:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).execute()
+        if len(search_array) == 4:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).eq(search_array[1], search_dict[search_array[3]]).execute()
+    else: 
+        if len(search_array) == 0:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value)").eq("customer_id", session["customer_id"]).execute()
+        if len(search_array) == 1:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value)").eq(search_array[0], search_dict[search_array[0]]).eq("customer_id", session["customer_id"]).execute()
+        if len(search_array) == 2:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq("customer_id", session["customer_id"]).execute()
+        if len(search_array) == 3:
+            asset_response = supabase.table("devices").select("*, device_types(name), statuses(value)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).eq("customer_id", session["customer_id"]).execute()
+    return asset_response.data if asset_response.data else None
+
+#def search_assets(search_dict):
+    #search_dict=dict(search_dict)
+    #if search_dict['status_id']:
+    #    search_dict['status_id'] = return_status_id(search_dict['status_id'])
+    #if search_dict['type_id']:
+    #    search_dict['type_id'] = return_device_type_id(search_dict['type_id'])
+    #if session['auth_level'] == 1 or session['auth_level'] == 2:
+    #    if search_dict['customer_id'] :
+    #        search_dict['customer_id'] = return_customer_id(search_dict['customer_id'])
+    #elif session['auth_level'] != 1 and session['auth_level'] != 2:
+    #    search_dict['customer_id'] = session['customer_id']
+    #search_array=[]
+    #print("Search Dictionary:", search_dict)
+    #for item in search_dict:
+    #    if search_dict[item]:
+    #        search_array.append(item)
+    #if len(search_array) == 0:
+    #    return []
+    #if len(search_array) == 1:
+    #    response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).execute()
+    #    print(response)
+    #if len(search_array) == 2:
+    #    response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).execute()
+    #    print(response)
+    #if len(search_array) == 3:
+    #    response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).execute()
+    #    print(response)
+    #return response.data if response.data else None
 
 
 def search_customers(search_dict):

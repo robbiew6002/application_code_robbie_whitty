@@ -1,52 +1,108 @@
 <html>
 <head>
-    <title>Your Asset Page</title>
+    <title>Search Assets</title>
 </head>
-
 {% include 'navbar.html' %}
+{% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
 <div id="page">
     <div id="header">
-        <h1>View Assets</h1>
-        {% if session['auth_level'] == 1 or session['auth_level'] == 2%}
-        <p>Here you can view assets for all customers</p>
-        {% else %}
-        <p>Here you can view your assets</p>
-        {% endif %}
+        <h1>Search Assets</h1>
+        <p>Here you can view and search for assets across all customers.</p>
     </div>
-    {% if assets %}
     <div id="content">
+        <form method="POST" action="/assets">
+            <input type="text" name="hostname" placeholder="Hostname">
+            <select id="type_id" name="type_id">
+                <option value="" selected>Asset Type</option>
+                {% for type in device_types %}
+                <option value="{{ type.id }}" >{{ type.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="status_id" name="status_id">
+                <option value="" selected>Status</option>
+                {% for status in statuses %}
+                <option value="{{ status.id }}">{{ status.value }}</option>
+                {% endfor %}
+            </select>
+            <select id="customer_id" name="customer_id">
+                <option value="" selected>Customer</option>
+                {% for customer in customers %}
+                <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Search</button>
+        </form>
+        {% if results %}
+        <h2>Search Results:</h2>
         <table>
             <thead>
                 <tr>
                     <th>Hostname</th>
                     <th>Asset Type</th>
                     <th>Status</th>
-                    {% if assets[0].customers %}
                     <th>Customer</th>
-                    {% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for asset in assets %}
+                {% for asset in results %}
                 <tr>
-                    {% if session['auth_level'] == 1 or session['auth_level'] == 2 %}
-                    <td><a href="/assets/{{ asset.id }}">{{ asset.hostname }}</a></td>
-                    {% else %}
-                    <td>{{ asset.hostname }}</td>
-                    {% endif %}
+                    <td><a href="/assets/{{asset.id}}">{{ asset.hostname }}</a></td>
                     <td>{{ asset.device_types.name }}</td>
                     <td>{{ asset.statuses.value }}</td>
-                    {% if asset.customers %}
                     <td>{{ asset.customers.customer_name }}</td>
-                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <p>No results found.</p>
+        {% endif %}
+{% else %}
+    <div id="page">
+    <div id="header">
+        <h1>Search Assets</h1>
+        <p>Here you can view and search for your assets.</p>
     </div>
-    {% else %}
     <div id="content">
-        <p>Welp, looks like you don't have any assets.</p>
+        <form method="POST" action="/assets">
+            <input type="text" name="hostname" placeholder="Hostname">
+            <select id="type_id" name="type_id">
+                <option value="" selected>Asset Type</option>
+                {% for type in device_types %}
+                <option value="{{ type.id }}" >{{ type.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="status_id" name="status_id">
+                <option value="" selected>Status</option>
+                {% for status in statuses %}
+                <option value="{{ status.id }}">{{ status.value }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Search</button>
+        </form>
+        {% if results %}
+        <h2>Search Results:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Asset Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in results %}
+                <tr>
+                    <td>{{ asset.hostname }}</td>
+                    <td>{{ asset.device_types.name }}</td>
+                    <td>{{ asset.statuses.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No results found.</p>
+        {% endif %}
+{% endif %}
     </div>
-    {% endif %}
-</div>
+</html>

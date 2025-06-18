@@ -41,28 +41,21 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-@app.route('/assets')
-def display_assets():
-    if not session.get('logged_in'):
-        return redirect(url_for('index'))
-    #Move to search file#
-    if session['auth_level'] == 1 or session['auth_level'] == 2:
-        response = supabase.table("devices").select("id, hostname, device_types(name), statuses(value), customers(customer_name)" ).execute()
-        search_dict={}
-    else:
-        response = supabase.table("devices").select("id, hostname, device_types(name), statuses(value)").eq("customer_id", session['customer_id']).execute()
-    assets = response.data
-    # ^^ #
-    return render_template("assets.html", assets=assets)
 
-@app.route('/search', methods=['GET', 'POST'])
-def search():
+@app.route('/assets', methods=['GET', 'POST'])
+def assets():
     if not session.get('logged_in'):
             return redirect(url_for('index'))
     if request.method == 'GET':
-        return render_template("search.html")
+        return render_template("assets.html", results=search_assets({}),
+                                customers=supabase.table("customers").select("id","customer_name").execute().data,
+                                device_types=supabase.table("device_types").select("id", "name").execute().data,
+                                statuses=supabase.table("statuses").select("id","value").execute().data)
     if request.method=='POST':
-        return render_template("search.html", results=search_assets(request.form))
+        return render_template("assets.html", results=search_assets(request.form),
+                                customers=supabase.table("customers").select("id","customer_name").execute().data,
+                                device_types=supabase.table("device_types").select("id", "name").execute().data,
+                                statuses=supabase.table("statuses").select("id","value").execute().data)
 
 @app.route('/customers', methods=['GET', 'POST'])
 def customers():
