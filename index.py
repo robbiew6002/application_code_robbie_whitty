@@ -4,7 +4,7 @@ from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
 from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id
-from create import add_asset_to_database, add_customer_to_database, add_user_to_database
+from create import add_asset_to_database, add_customer_to_database, add_user_to_database, create_request
 from update import update_asset, update_customer, update_user
 from delete import delete_asset_by_id, delete_customer_by_id, delete_user_by_id
 
@@ -193,3 +193,13 @@ def delete_user(user_id):
         return (redirect('/users'))
     return (redirect(f'/users/{user_id}'))
     
+@app.route('/contact', methods=["GET", "POST"])
+def user_requests():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+    if request.method == "GET":
+        return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data, request_created=False)
+    if request.method == "POST":
+        print(request.form)
+        create_request(request.form, session["user_id"], session["customer_id"])
+        return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data, request_created=True)
