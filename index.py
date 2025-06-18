@@ -48,6 +48,7 @@ def display_assets():
     #Move to search file#
     if session['auth_level'] == 1 or session['auth_level'] == 2:
         response = supabase.table("devices").select("id, hostname, device_types(name), statuses(value), customers(customer_name)" ).execute()
+        search_dict={}
     else:
         response = supabase.table("devices").select("id, hostname, device_types(name), statuses(value)").eq("customer_id", session['customer_id']).execute()
     assets = response.data
@@ -68,7 +69,7 @@ def customers():
     if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
             return redirect(url_for('index'))
     if request.method == 'GET':
-        return render_template("customers.html")
+        return render_template("customers.html", results = search_customers({}))
     if request.method=='POST':
         return render_template("customers.html", results=search_customers(request.form))
 

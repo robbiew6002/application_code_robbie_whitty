@@ -42,7 +42,7 @@ def search_assets(search_dict):
         if search_dict[item]:
             search_array.append(item)
     if len(search_array) == 0:
-        return None
+        return []
     if len(search_array) == 1:
         response = supabase.table("devices").select("hostname, device_types(name), statuses(value), customers(customer_name)").eq(search_array[0], search_dict[search_array[0]]).execute()
         print(response)
