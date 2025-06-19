@@ -198,8 +198,21 @@ def user_requests():
     if not session.get('logged_in'):
         return redirect(url_for('index'))
     if request.method == "GET":
-        return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data, request_created=False)
+        if session["auth_level"] == 1 or session["auth_level"] == 2:
+            return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").execute().data, 
+            customers=supabase.table("customers").select("id", "customer_name").execute().data,
+            request_created=False)
+        else:
+            return render_template("contact.html", 
+            assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data, 
+            customers=None, request_created=False)
     if request.method == "POST":
         print(request.form)
-        create_request(request.form, session["user_id"], session["customer_id"])
-        return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data, request_created=True)
+        create_request(request.form)
+        if session["auth_level"] == 1 or session["auth_level"] == 2:
+            return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").execute().data, 
+            customers=supabase.table("customers").select("id", "customer_name").execute().data,
+            request_created=True)
+        else:
+            return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data,
+            customers=None, request_created=True)

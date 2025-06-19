@@ -1,11 +1,44 @@
 <html>
     <head>
-        <title>Contact Team</title>
+        <title>Contact Page</title>
     </head>
     <body>
         {% include 'navbar.html' %}
+        {% if session.auth_level == 1 or session.auth_level == 2 %}
         <div id="page">
-            <div id="Heading">
+            <div id="heading">
+                <h2>User Requests</h2>
+                <h4>Here you can view existing user requests and create new requests.</h4>
+            </div>
+            <div id="form_container">
+                <form id="contact-form" method="post" action="/contact">
+                    <label for="summary">Summary:</label>
+                    <input name="summary" type="text" placeholder="give a brief title to the request" required>
+                    <label for="description">Description:</label>
+                    <textarea name="description" placeholder="Provide a description of your issue." required></textarea>
+                    <label for="device_id">Related Device</label>
+                    <select name="device_id">
+                        <option value="" selected>None</option>
+                        {% for asset in assets %}
+                        <option value="{{asset.id}}">{{asset.hostname}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="customer_id">Related Customer:</label>
+                    <select name="customer_id" required>
+                        {% for customer in customers %}
+                        <option value="{{customer.id}}">{{customer.customer_name}}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Submit</button>
+                </form>
+                {% if request_created == True %}
+                <p>Thanks for submiiting your request.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div id="page">
+            <div id="heading">
                 <h2>Contact</h2>
                 <h4>Use the form below to contact support</h4>
             </div>
@@ -29,5 +62,6 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
     </body>
 </html>
