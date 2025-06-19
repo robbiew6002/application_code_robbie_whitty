@@ -8,4 +8,3 @@ def delete_customer_by_id(customer_id):
 
 def delete_user_by_id(user_id):
     response = supabase.table("users").delete().eq("id", user_id).execute()
-

@@ -10,32 +10,119 @@
                 <h2>User Requests</h2>
                 <h4>Here you can view existing user requests and create new requests.</h4>
             </div>
-            <div id="form_container">
-                <form id="contact-form" method="post" action="/contact">
-                    <label for="summary">Summary:</label>
-                    <input name="summary" type="text" placeholder="give a brief title to the request" required>
-                    <label for="description">Description:</label>
-                    <textarea name="description" placeholder="Provide a description of your issue." required></textarea>
-                    <label for="device_id">Related Device</label>
-                    <select name="device_id">
-                        <option value="" selected>None</option>
-                        {% for asset in assets %}
-                        <option value="{{asset.id}}">{{asset.hostname}}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="customer_id">Related Customer:</label>
-                    <select name="customer_id" required>
-                        {% for customer in customers %}
-                        <option value="{{customer.id}}">{{customer.customer_name}}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit">Submit</button>
-                </form>
-                {% if request_created == True %}
-                <p>Thanks for submiiting your request.</p>
-                {% endif %}
+            <div id="tickets_container">
+                <div id="form_container">
+                    <form id="contact-form" method="post" action="/contact">
+                        <h3>Create Tickets</h3>
+                        <label for="summary">Summary:</label>
+                        <input name="summary" type="text" placeholder="give a brief title to the request" required>
+                        <label for="description">Description:</label>
+                        <textarea name="description" placeholder="Provide a description of your issue." required></textarea>
+                        <label for="device_id">Related Device</label>
+                        <select name="device_id">
+                            <option value="" selected>None</option>
+                            {% for asset in assets %}
+                            <option value="{{asset.id}}">{{asset.hostname}}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="customer_id">Related Customer:</label>
+                        <select name="customer_id" required>
+                            {% for customer in customers %}
+                            <option value="{{customer.id}}">{{customer.customer_name}}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Submit</button>
+                    </form>
+                    {% if request_created == True %}
+                    <p>Thanks for submiiting your request.</p>
+                    {% endif %}
+                </div>
+                <div id="ticket_display">
+                    <h3>View and Search tickets</h3>
+                    <form method="POST" action="/user-requests">
+                        <input type="text" name="Descrption" placeholder="Description">
+                        <select id="type_id" name="type_id">
+                            <option value="" selected>Status</option>
+                            {% for status in statues %}
+                            <option value="{{ status.id }}" >{{ status.value }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="customer_id" name="customer_id">
+                            <option value="" selected>Customer</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="user_id" placeholder="User">
+                        <select id="device_id" name="device_id">
+                            <option value="" selected>Device</option>
+                            {% for device in devices %}
+                            <option value="{{ device.id }}">{{ device.hostname }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Search</button>
+                    </form>
+                    {% if results %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Summary</th>
+                                <th>Status</th>
+                                <th>Customer</th>
+                                <th>User</th>
+                                <th>Device</th>
+                                <th>Time Created</th>
+                                <th>Assigned To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in results %}
+                            <tr>
+                                <a href="tickets/{{ticket.id}}"><th>{{ticket.summary}}</th></a>
+                                <th>{{ticket.request_statuses.Value}}</th>
+                                <th>{{ticket.customers.customer_name}}</th>
+                                <th>{{ticket.created_user}}</th>
+                                {% if ticket.device_id %}
+                                <th>{{ticket.devices.hostname}}</th>
+                                {% else %}
+                                <th>No assigned device</th>
+                                {% endif %}
+                                <th>{{ticket.time_submitted}}</th>
+                                 {% if ticket.assigned_team_member_id %}
+                                <th>{{ticket.assigned_team_member}}</th>
+                                {% else %}
+                                <th>No assigned team member</th>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No results found</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        <style>
+            #tickets_container {
+                display: flex;
+                flex-direction: row;
+                width: 100%
+            }
+
+            #tickets_container > * {
+                width: 50%;
+                height: 500px
+            }
+
+            form {
+                height: 100%
+            }
+
+        </style>
+
+
         {% else %}
         <div id="page">
             <div id="heading">
