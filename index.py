@@ -3,7 +3,7 @@
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 from auth import check_credentials
-from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id, return_all_tickets
+from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id, return_all_tickets, search_for_tickets
 from create import add_asset_to_database, add_customer_to_database, add_user_to_database, create_request
 from update import update_asset, update_customer, update_user
 from delete import delete_asset_by_id, delete_customer_by_id, delete_user_by_id
@@ -200,7 +200,7 @@ def user_requests():
     if request.method == "GET":
         if session["auth_level"] == 1 or session["auth_level"] == 2:
             tickets=return_all_tickets()
-            print(tickets)
+            print(supabase.table("request_statuses").select("id, Value").execute().data)
             return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").execute().data, 
             customers=supabase.table("customers").select("id", "customer_name").execute().data, statuses=supabase.table("request_statuses").select("id, Value").execute().data,
             devices=supabase.table("devices").select("id, hostname").execute().data ,results=tickets ,request_created=False)
@@ -220,4 +220,17 @@ def user_requests():
         else:
             return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").eq("customer_id", session["customer_id"]).execute().data,
             customers=None, request_created=True)
+
+@app.route("/user-requests", methods=["POST"])
+def search_user_requests():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+    if session["auth_level"] != 1 and session["auth_level"] != 2:
+        return(redirect("/contact"))
+    if request.method == "POST":
+        print(request.form)
+        tickets=search_for_tickets(request.form)
+        return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").execute().data, 
+                customers=supabase.table("customers").select("id", "customer_name").execute().data, statuses=supabase.table("request_statuses").select("id, Value").execute().data,
+                devices=supabase.table("devices").select("id, hostname").execute().data ,results=tickets ,request_created=False)
 

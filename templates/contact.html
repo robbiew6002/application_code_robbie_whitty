@@ -39,12 +39,12 @@
                 </div>
                 <div id="ticket_display">
                     <h3>View and Search tickets</h3>
-                    <form method="POST" action="/user-requests">
+                    <form method="post" action="/user-requests">
                         <input type="text" name="Descrption" placeholder="Description">
-                        <select id="type_id" name="type_id">
+                        <select id="status_id" name="status_id">
                             <option value="" selected>Status</option>
-                            {% for status in statues %}
-                            <option value="{{ status.id }}" >{{ status.value }}</option>
+                            {% for status in statuses %}
+                            <option value="{{ status.id }}" >{{ status.Value }}</option>
                             {% endfor %}
                         </select>
                         <select id="customer_id" name="customer_id">
@@ -78,20 +78,20 @@
                         <tbody>
                             {% for ticket in results %}
                             <tr>
-                                <a href="tickets/{{ticket.id}}"><th>{{ticket.summary}}</th></a>
-                                <th>{{ticket.request_statuses.Value}}</th>
-                                <th>{{ticket.customers.customer_name}}</th>
-                                <th>{{ticket.created_user}}</th>
+                                <td><a href="tickets/{{ticket.id}}">{{ticket.summary}}</a></td>
+                                <td>{{ticket.request_statuses.Value}}</td>
+                                <td>{{ticket.customers.customer_name}}</th>
+                                <td>{{ticket.created_user}}</td>
                                 {% if ticket.device_id %}
-                                <th>{{ticket.devices.hostname}}</th>
+                                <td>{{ticket.devices.hostname}}</td>
                                 {% else %}
-                                <th>No assigned device</th>
+                                <td>No assigned device</td>
                                 {% endif %}
-                                <th>{{ticket.time_submitted}}</th>
+                                <td>{{ticket.time_submitted}}</td>
                                  {% if ticket.assigned_team_member_id %}
-                                <th>{{ticket.assigned_team_member}}</th>
+                                <td>{{ticket.assigned_team_member}}</td>
                                 {% else %}
-                                <th>No assigned team member</th>
+                                <td>No assigned team member</td>
                                 {% endif %}
                             </tr>
                             {% endfor %}

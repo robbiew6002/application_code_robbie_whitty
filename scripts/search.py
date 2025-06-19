@@ -125,3 +125,35 @@ def return_all_tickets():
         if ticket["assigned_team_member_id"]:
             ticket["assigned_team_member"] = supabase.table("users").select("username").eq("id", ticket["assigned_team_member_id"]).execute().data[0]["username"]
     return tickets.data
+
+def search_for_tickets(search_dict):
+    search_dict = dict(search_dict)
+    if search_dict["user_id"]:
+        found_users=supabase.table("users").select("id").eq("username", search_dict["user_id"]).execute().data
+        if len(found_users) > 0:
+            search_dict["user_id"] = found_users[0]["id"]
+        else:
+            return None
+    search_array = []
+    for item in search_dict:
+        if search_dict[item]:
+            search_array.append(item)
+    if len(search_array) == 0:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").execute()
+    if len(search_array) == 1:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq(search_array[0], search_dict[search_array[0]]).execute()
+    if len(search_array) == 2:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).execute()
+    if len(search_array) == 3:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).execute()
+    if len(search_array) == 4:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).eq(search_array[3], search_dict[search_array[3]]).execute()
+    if len(search_array) == 5:
+        ticket_response = supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq(search_array[0], search_dict[search_array[0]]).eq(search_array[1], search_dict[search_array[1]]).eq(search_array[2], search_dict[search_array[2]]).eq(search_array[3], search_dict[search_array[3]]).eq(search_array[4], search_dict[search_array[4]]).execute()
+    if ticket_response.data is None:
+        return None
+    for ticket in ticket_response.data:
+        ticket["created_user"] = supabase.table("users").select("username").eq("id", ticket["user_id"]).execute().data[0]["username"]
+        if ticket["assigned_team_member_id"]:
+            ticket["assigned_team_member"] = supabase.table("users").select("username").eq("id", ticket["assigned_team_member_id"]).execute().data[0]["username"]
+    return ticket_response.data
