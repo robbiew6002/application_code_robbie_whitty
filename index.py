@@ -5,7 +5,7 @@ from supabaseClient import supabase
 from auth import check_credentials
 from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id, return_all_tickets, search_for_tickets, get_ticket_by_id, get_ticket_notes
 from create import add_asset_to_database, add_customer_to_database, add_user_to_database, create_request, add_note_to_ticket
-from update import update_asset, update_customer, update_user, change_ticket_device, change_ticket_customer, change_ticket_user
+from update import update_asset, update_customer, update_user, change_ticket_device, change_ticket_customer, change_ticket_user, change_ticket_status, reassign_ticket_user
 from delete import delete_asset_by_id, delete_customer_by_id, delete_user_by_id, delete_ticket_by_id, delete_note_by_id
 
 app = Flask(__name__)
@@ -313,4 +313,29 @@ def delete_note(ticket_id, note_id):
         return(redirect("/contact"))
     if request.method == "POST":
         delete_note_by_id(note_id)
+        return redirect(f"/tickets/{ticket_id}")
+
+@app.route("/tickets/<ticket_id>/reassign", methods=["POST"])
+def reassign_ticket(ticket_id):
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    if session["auth_level"] != 1 and session["auth_level"] != 2:
+        return(redirect("/contact"))
+    if request.method == "POST":
+        ticket_details=get_ticket_by_id(ticket_id)
+        if ticket_details["request_statuses"]["Value"] == "New":
+            change_ticket_status(ticket_id, 2)
+        reassign_ticket_user(ticket_id, session["user_id"])
+        return redirect(f"/tickets/{ticket_id}")
+
+@app.route("/tickets/<ticket_id>/close", methods=["POST"])
+def close_ticket(ticket_id):
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    if session["auth_level"] != 1 and session["auth_level"] != 2:
+        return(redirect("/contact"))
+    if request.method == "POST":
+        closing_user=return_user_by_id(session["user_id"])
+        change_ticket_status(ticket_id, 3)
+        add_note_to_ticket({"body": f"Ticket closed by {closing_user['username']}", "created_by": session["user_id"]},ticket_id)
         return redirect(f"/tickets/{ticket_id}")

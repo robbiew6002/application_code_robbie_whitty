@@ -61,6 +61,26 @@
 
     }
 
+    function showReassignPopup() {
+        document.getElementById('reassign-popup').style.display = 'block';
+
+    }
+
+    function hideReassignPopup() {
+        document.getElementById('reassign-popup').style.display = 'none';
+
+    }
+
+        function showClosePopup() {
+        document.getElementById('close-popup').style.display = 'block';
+
+    }
+
+    function hideClosePopup() {
+        document.getElementById('close-popup').style.display = 'none';
+
+    }
+
     </script>
 
     <head>
@@ -92,7 +112,7 @@
                 <p>Notes:</p>
                 {% for note in ticket.notes %}
                     <div id="note_{{note.id}}">
-                        <p>{{note.created_at}} - Body: {{note.body}} - Created By: {{note.users.username}}</p>
+                        <p>{{note.created_at}} - {{note.body}} - {{note.users.username}}</p>
                         <button onclick="showDeleteNotePopup()">Delete Note</button>
                         <div id="delete-note-popup">
                             <button onClick="hideDeleteNotePopup()">Close</button>
@@ -139,7 +159,7 @@
                         <button value="submit">Submit</button>
                     </form>
                 </div>
-                 <button onclick="showChangeCustomer()">Change Customer</button>
+                <button onclick="showChangeCustomer()">Change Customer</button>
                 <div id="customer-form">
                     <button onclick="hideChangeCustomer()">Close</button>
                     <form name="change-customer-form" id="change-customer-form" method="post" action="/tickets/{{ticket.id}}/changeCustomer">
@@ -175,11 +195,32 @@
                         <button value="submit">Submit</button>
                     </form>
                 </div>
+                <button onclick="showReassignPopup()">Assign ticket to self</button>
+                <div id="reassign-popup">
+                    <button onClick="hideReassignPopup()">Close</button>
+                    <h4>Are you sure you wish to assign this ticket to yourself?</h4>
+                    <form id="reassign-form" method="POST" action="/tickets/{{ticket.id}}/reassign">
+                        <label for="verify">Check To verfy:</label>
+                        <input type="checkbox" name="verify" required>
+                        <button type="submit">Reassign</button>
+                    </form>
+                </div>
+                 <button onclick="showClosePopup()">Mark ticket as closed</button>
+                <div id="close-popup">
+                    <button onClick="hideClosePopup()">Close</button>
+                    <h4>Are you sure you wish to close this?</h4>
+                    <form id="close-form" method="POST" action="/tickets/{{ticket.id}}/close">
+                        <textarea name="closed_note" required>Please provide a description of the resolution</textarea>
+                        <label for="verify">Check To verfy:</label>
+                        <input type="checkbox" name="verify" required>
+                        <button type="submit">Close Ticket</button>
+                    </form>
+                </div>
                 <button onclick="showDeletePopup()">Delete Ticket</button>
                 <div id="delete-popup">
                     <button onClick="hideDeletePopup()">Close</button>
                     <h4>Are you sure you wish to delete this ticket?</h4>
-                    <form id="asset-delete-form" method="POST" action="/tickets/{{ticket.id}}/delete">
+                    <form id="ticket-delete-form" method="POST" action="/tickets/{{ticket.id}}/delete">
                         <label for="verify">Check To verfy:</label>
                         <input type="checkbox" name="verify" required>
                         <button type="submit">Delete</button>
@@ -195,7 +236,7 @@
             opacity: 1;
         }
 
-        #note-form, #device-form, #customer-form, #user-form, #delete-popup, #delete-note-popup {
+        #note-form, #device-form, #customer-form, #user-form, #delete-popup, #delete-note-popup, #reassign-popup, #close-popup {
         display: none;
         position: absolute;
         border: 1pt black;

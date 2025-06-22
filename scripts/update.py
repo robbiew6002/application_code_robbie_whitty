@@ -74,3 +74,11 @@ def change_ticket_user(request_dict, ticket_id):
     response=supabase.table("user_requests").update({"user_id": request_dict["user_id"]}).eq("id", ticket_id).execute()
     print(response)
     return response.data
+
+def change_ticket_status(ticket_id, status_id):
+    response = supabase.table("user_requests").update({"status_id": status_id}).eq("id", ticket_id).execute()
+    return response.data
+
+def reassign_ticket_user(ticket_id, user_id):
+    response=supabase.table("user_requests").update({"assigned_team_member_id": user_id}).eq("id", ticket_id).execute()
+    return response.data
