@@ -27,6 +27,68 @@
             <button type="submit">Update</button>
         </form>
         </div>
+        <div id="assets-and-tickets">
+            <div id="asset-container">
+                <h3>Customers Assets:</h3>
+                {% if assets %}
+                <table id="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Hostname</th>
+                            <th>Device Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for asset in assets %}
+                        <tr>
+                            <td><a href="/assets/{{asset.id}}">{{asset.hostname}}</a></td>
+                            <td>{{asset.device_types.name}}</td>
+                            <td>{{asset.statuses.value}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="/create"><button>Create new asset</button></a>
+                {% else %}
+                <p>Customer has no assets configured yet. To configure one, create an asset here.</p>
+                <a href="/create"><button>Create new assets.</button></a>
+                {% endif %}
+            </div>
+            <h3>Customer Active Tickets</h3>
+            {% if tickets %}
+                <table id="ticket-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Summary</th>
+                            <th>Status</th>
+                            <th>Device</th>
+                            <th>Time Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for ticket in tickets %}
+                        <tr>
+                            <td><a href="/tickets/{{ticket.id}}">{{ticket.id}}</a></td>
+                            <td>{{ticket.summary}}</td>
+                            <td>{{ticket.request_statuses.Value}}</td>
+                            {% if ticket.devices %}
+                            <td>{{ticket.devices.hostname}}</td>
+                            {% else %}
+                            <td>No device assigned</td>
+                            {% endif %}
+                            <td>{{ticket.time_submitted}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="/contact"><button>Create new ticket</button></a>
+                {% else %}
+                <p>Customer has no active tickets. To create a new one, click here.</p>
+                <a href="/contact"><button>Create new ticket</button></a>
+                {% endif %}
+        </div>
          <div id="delete-button-container">
             <button onclick="showDeletePopup()">Delete</button>
         </div>

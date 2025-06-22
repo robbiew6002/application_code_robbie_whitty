@@ -127,7 +127,9 @@ def single_customer(customer_id):
         if not customer_details:
             return redirect(url_for('customers'))
         print(customer_details)
-        return render_template("single_customer.html", customer=customer_details)
+        return render_template("single_customer.html", customer=customer_details,
+                                assets=supabase.table("devices").select("*, statuses(value), device_types(name)").eq("customer_id", customer_id).execute().data,
+                                tickets=supabase.table("user_requests").select("*, request_statuses(Value), devices(hostname)").eq("customer_id", customer_id).or_("status_id.eq.1,status_id.eq.2").execute().data)
     if request.method == 'POST':
         print(request.form)
         update_customer(customer_details["id"], request.form)
