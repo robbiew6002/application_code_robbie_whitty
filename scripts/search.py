@@ -157,3 +157,20 @@ def search_for_tickets(search_dict):
         if ticket["assigned_team_member_id"]:
             ticket["assigned_team_member"] = supabase.table("users").select("username").eq("id", ticket["assigned_team_member_id"]).execute().data[0]["username"]
     return ticket_response.data
+
+def get_ticket_by_id(ticket_id):
+    ticket_details=supabase.table("user_requests").select("*, customers(customer_name), request_statuses(Value), devices(hostname)").eq("id", ticket_id).execute().data
+    if len(ticket_details) < 0:
+        return None
+    ticket_details=dict(ticket_details[0])
+    ticket_details["created_user"] = supabase.table("users").select("username").eq("id", ticket_details["user_id"]).execute().data[0]["username"]
+    if ticket_details["assigned_team_member_id"]:
+        ticket_details["assigned_team_member"] = supabase.table("users").select("username").eq("id", ticket_details["assigned_team_member_id"]).execute().data[0]["username"]
+    else:
+        ticket_details["assigned_team_member"] = None
+    return ticket_details
+
+def get_ticket_notes(ticket_id):
+    ticket_notes=supabase.table("request_notes").select("*, users(username)").eq("request_id", ticket_id).execute().data
+    print(ticket_notes)
+    return ticket_notes

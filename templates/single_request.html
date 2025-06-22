@@ -1,0 +1,217 @@
+ <html>
+    <script>
+
+    function showAddNoteForm() {
+        document.getElementById('note-form').style.display = 'block';
+
+    }
+
+    function hideAddNoteForm() {
+        document.getElementById('note-form').style.display = 'none';
+
+    }
+
+    function showChangeDevice() {
+        document.getElementById('device-form').style.display = 'block';
+
+    }
+
+    function hideChangeDevice() {
+        document.getElementById('device-form').style.display = 'none';
+
+    }
+
+     function showChangeCustomer() {
+        document.getElementById('customer-form').style.display = 'block';
+
+    }
+
+    function hideChangeCustomer() {
+        document.getElementById('customer-form').style.display = 'none';
+
+    }
+
+     function showChangeUser() {
+        document.getElementById('user-form').style.display = 'block';
+
+    }
+
+    function hideChangeUser() {
+        document.getElementById('user-form').style.display = 'none';
+
+    }
+
+        function showDeletePopup() {
+        document.getElementById('delete-popup').style.display = 'block';
+
+    }
+
+    function hideDeletePopup() {
+        document.getElementById('delete-popup').style.display = 'none';
+
+    }
+
+            function showDeleteNotePopup() {
+        document.getElementById('delete-note-popup').style.display = 'block';
+
+    }
+
+    function hideDeleteNotePopup() {
+        document.getElementById('delete-note-popup').style.display = 'none';
+
+    }
+
+    </script>
+
+    <head>
+        <title>Request {{request.id}}</title>
+    </head>
+    <body>
+        <div id="page">
+            {% include 'navbar.html' %}
+            <div id="ticket_details">
+                <h2>Ticket: {{ticket.id}}</h2>
+                <p>Time Submitted: {{ticket.time_submitted}}</p>
+                <p>Summary: {{ticket.summary}}</p>
+                <p>Description:</p>
+                <p>{{ticket.description}}</p>
+                <p>Status: {{ticket.request_statuses.Value}}</p>
+                <p>User: {{ticket.created_user}}</p>
+                {% if ticket.assigned_team_member %}
+                <p>Assigned To: {{ticket.assigned_team_member}}</p>
+                {% else %}
+                <p>Assigned to: Not yet assigned</p>
+                {% endif %}
+                {% if ticket.devices.hostname %}
+                <p>Device: {{ticket.devices.hostname}}</p>
+                {% else %}
+                <p>No Device Assigned</p>
+                {% endif %}
+                <p>Customer: {{ticket.customers.customer_name}}</p>
+                {% if ticket.notes %}
+                <p>Notes:</p>
+                {% for note in ticket.notes %}
+                    <div id="note_{{note.id}}">
+                        <p>Created at: {{note.created_at}} - Created by: {{note.users.username}} - Body: {{note.body}}</p>
+                        <button onclick="showDeleteNotePopup()">Delete Note</button>
+                        <div id="delete-note-popup">
+                            <button onClick="hideDeleteNotePopup()">Close</button>
+                            <h4>Are you sure you wish to delete this note?</h4>
+                            <form id="note-delete-form" method="POST" action="/tickets/{{ticket.id}}/note/{{note.id}}/delete">
+                                <label for="verify">Check To verfy:</label>
+                                <input type="checkbox" name="verify" required>
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div id="ticket-actions">
+                <button onclick="showAddNoteForm()">Add note to ticket</button>
+                <div id="note-form">
+                    <button onclick="hideAddNoteForm()">Close</button>
+                    <form name="add-note-form" id="add_note_form" method="post" action="/tickets/{{ticket.id}}/addNote">
+                        <textarea name="body">Note details</textarea>
+                        <button value="submit">Submit</button>
+                    </form>
+                </div>
+                <button onclick="showChangeDevice()">Change/Add Device</button>
+                <div id="device-form">
+                    <button onclick="hideChangeDevice()">Close</button>
+                    <form name="change-device-form" id="change-device-form" method="post" action="/tickets/{{ticket.id}}/changeDevice">
+                        <p id="device-warning">Please be aware that changing the device will change the request to be associated with the customer associated to that account.</p>
+                        <p id="device-warning">This may reassign the user to a general user for that account.</p>
+                        <select name="device_id">
+                            {% if not ticket.device_id %}
+                            <option value="" selected>No Device</option>
+                            {% else %}
+                            <option value="">No Device</option>
+                            {% endif %}
+                            {% for device in devices %}
+                            {% if ticket.device_id == device.id %}
+                            <option value="{{device.id}}" selected>{{device.hostname}}</option>
+                            {% else %}
+                            <option value="{{device.id}}">{{device.hostname}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button value="submit">Submit</button>
+                    </form>
+                </div>
+                 <button onclick="showChangeCustomer()">Change Customer</button>
+                <div id="customer-form">
+                    <button onclick="hideChangeCustomer()">Close</button>
+                    <form name="change-customer-form" id="change-customer-form" method="post" action="/tickets/{{ticket.id}}/changeCustomer">
+                        <p id="customer-warning">Please be aware that changing the customer may remove the associated device</p>
+                        <p id="customer-warning">This may also reassign the user to a general user for that customer.</p>
+                        <select name="customer_id">
+                            {% for customer in customers %}
+                            {% if ticket.customer_id == customer.id %}
+                            <option value="{{customer.id}}" selected>{{customer.customer_name}}</option>
+                            {% else %}
+                            <option value="{{customer.id}}">{{customer.customer_name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button value="submit">Submit</button>
+                    </form>
+                </div>
+                    <button onclick="showChangeUser()">Change User</button>
+                    <div id="user-form">
+                    <button onclick="hideChangeUser()">Close</button>
+                    <form name="change-user-form" id="change-user-form" method="post" action="/tickets/{{ticket.id}}/changeUser">
+                        <p id="user-warning">Tickets can only be assigned to a user for their assigned customer.</p>
+                        <p id="user-warning">You may need to reassign the customer first</p>
+                        <select name="user_id">
+                            {% for user in users %}
+                            {% if ticket.user_id == user.id %}
+                            <option value="{{user.id}}" selected>{{user.username}}</option>
+                            {% else %}
+                            <option value="{{user.id}}">{{user.username}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button value="submit">Submit</button>
+                    </form>
+                </div>
+                <button onclick="showDeletePopup()">Delete Ticket</button>
+                <div id="delete-popup">
+                    <button onClick="hideDeletePopup()">Close</button>
+                    <h4>Are you sure you wish to delete this ticket?</h4>
+                    <form id="asset-delete-form" method="POST" action="/tickets/{{ticket.id}}/delete">
+                        <label for="verify">Check To verfy:</label>
+                        <input type="checkbox" name="verify" required>
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    <style>
+
+        input::placeholder {
+            color : black;
+            opacity: 1;
+        }
+
+        #note-form, #device-form, #customer-form, #user-form, #delete-popup, #delete-note-popup {
+        display: none;
+        position: absolute;
+        border: 1pt black;
+        background-color: grey;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 200px;
+    }
+
+    #device-warning {
+        color: red;
+        font-size: 10pt;
+    }
+
+
+    </style>
+</html>

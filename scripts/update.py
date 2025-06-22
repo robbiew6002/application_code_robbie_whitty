@@ -1,5 +1,6 @@
 #File to hold update record scripts
 
+from search import get_ticket_by_id
 from supabaseClient import supabase
 
 def update_asset(asset_id,asset_details):
@@ -38,3 +39,38 @@ def update_user(user_id, user_details):
             response=supabase.table("users").update({"auth_level":int(user_details["auth_level"])}).eq('id', user_id).execute()
     return
 
+def change_ticket_device(request_dict, ticket_id):
+    request_dict=dict(request_dict)
+    if not request_dict["device_id"]:
+        request_dict["device_id"] = None
+    else:
+        ticket_customer=supabase.table("user_requests").select("customer_id").eq("id",ticket_id).execute().data[0]
+        device_customer=supabase.table("devices").select("customer_id").eq("id", request_dict["device_id"]).execute().data[0]
+        if ticket_customer["customer_id"] != device_customer["customer_id"]:
+            update_customer=supabase.table("user_requests").update({"customer_id": device_customer["customer_id"]}).eq("id",ticket_id).execute()
+    response=supabase.table("user_requests").update({"device_id": request_dict["device_id"]}).eq("id", ticket_id).execute()
+    print(response)
+    return response.data
+
+def change_ticket_customer(request_dict, ticket_id):
+    request_dict=dict(request_dict)
+    ticket_details=get_ticket_by_id(ticket_id)
+    if ticket_details["device_id"]:
+        device_customer=supabase.table("devices").select("customer_id").eq("id", ticket_details["device_id"]).execute().data[0]
+        if device_customer["customer_id"] != request_dict["customer_id"]:
+            update_customer=supabase.table("user_requests").update({"device_id": None}).eq("id",ticket_id).execute()
+    response=supabase.table("user_requests").update({"customer_id": request_dict["customer_id"]}).eq("id", ticket_id).execute()
+    print(response)
+    return response.data
+
+def change_ticket_user(request_dict, ticket_id):
+    request_dict=dict(request_dict)
+#    ticket_details=get_ticket_by_id(ticket_id)
+#    get_user_details=return_user_by_id(request_dict["user_id"])
+#    if ticket_details["device_id"]:
+#        device_customer=supabase.table("devices").select("customer_id").eq("id", ticket_details["device_id"]).execute().data[0]
+#        if device_customer["customer_id"] != get_user_details["customer_id"]:
+#            update_customer=supabase.table("user_requests").update({"device_id": None}).eq("id",ticket_id).execute()
+    response=supabase.table("user_requests").update({"user_id": request_dict["user_id"]}).eq("id", ticket_id).execute()
+    print(response)
+    return response.data

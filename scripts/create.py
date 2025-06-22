@@ -29,3 +29,11 @@ def create_request(request_dict):
     response=supabase.table("user_requests").insert(final_request).execute()
     print(response.data)
     return response.data[0]
+
+def add_note_to_ticket(request_dict, ticket_id):
+    final_request=dict(request_dict)
+    final_request["created_by"] = session["user_id"]
+    final_request["request_id"] = ticket_id
+    response=supabase.table("request_notes").insert(final_request).execute()
+    return response.data[0]
+
