@@ -27,10 +27,11 @@ def create_request(request_dict):
     if session["auth_level"] != 1 and session["auth_level"] != 2:
         final_request["customer_id"] = session["customer_id"]
     response=supabase.table("user_requests").insert(final_request).execute()
-    print(response.data)
+    add_note_to_ticket({"created_by": session["user_id"], "body": "Ticket Created"},response.data[0]["id"])
     return response.data[0]
 
 def add_note_to_ticket(request_dict, ticket_id):
+    print(request_dict)
     final_request=dict(request_dict)
     final_request["created_by"] = session["user_id"]
     final_request["request_id"] = ticket_id

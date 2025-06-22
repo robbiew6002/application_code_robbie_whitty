@@ -92,7 +92,7 @@
                 <p>Notes:</p>
                 {% for note in ticket.notes %}
                     <div id="note_{{note.id}}">
-                        <p>Created at: {{note.created_at}} - Created by: {{note.users.username}} - Body: {{note.body}}</p>
+                        <p>{{note.created_at}} - Body: {{note.body}} - Created By: {{note.users.username}}</p>
                         <button onclick="showDeleteNotePopup()">Delete Note</button>
                         <div id="delete-note-popup">
                             <button onClick="hideDeleteNotePopup()">Close</button>
