@@ -38,3 +38,17 @@ def add_note_to_ticket(request_dict, ticket_id):
     response=supabase.table("request_notes").insert(final_request).execute()
     return response.data[0]
 
+def post_error_form(error_form):
+    final_dict={}
+    final_dict["user_id"] = session["user_id"]
+    final_dict["status_id"] = 1
+    final_dict["customer_id"] = 2
+    final_dict["device_id"] = None
+    final_dict["summary"] = f"A site error has occured."
+    failed_url=str(error_form["falied_url"])
+    failed_method=str(error_form["failed_method"])
+    final_dict["description"]=error_form["body"]
+    final_dict["description"] += f" This request occured on url {failed_url} on a {failed_method} request."
+    response=supabase.table("user_requests").insert(final_dict).execute()
+    print(response)
+    return response.data

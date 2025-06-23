@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>APPLICATION ERROR</title>
+    </head>
+    <body>
+        <div id="content">
+            <h2>An unexpected error has occured.</h2>
+            <p>Unfortunately the site has encountered an unexpected error.</p> 
+            <p>Please use the form below to log a new request to the it team so they can sort the issue.</p>
+            <p>Once complete, you will be redirected.</p>
+        </div>
+        <div>
+            <form action="/error" method="post">
+                <h3>Error Form</h3>
+                <textarea name="body" required>Please add a brief description of what you were trying to do.</textarea>
+                <input type="text" name="falied_url" value="{{request.url}}" hidden>
+                <input type="text" name="failed_method" value="{{request.method}}" hidden>
+                <button value="submit">Submit</button>
+            </form>
+            <p>Thank You</p>
+        </div>
+    </body>
+</html>

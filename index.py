@@ -1,16 +1,27 @@
 #This is the main application file that sets up the Flask app and routes.
 
+# Module Imports - Imports the modules used to run the application.
+# The below modules are installed via pip and are pre-made packages.
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
+
+# The below modules are files created within this application to implement modularity into the code.
 from auth import check_credentials
 from search import search_assets, search_customers, return_asset_by_id, return_customer_by_id, return_users, return_user_by_id, return_all_tickets, search_for_tickets, get_ticket_by_id, get_ticket_notes
-from create import add_asset_to_database, add_customer_to_database, add_user_to_database, create_request, add_note_to_ticket
+from create import add_asset_to_database, add_customer_to_database, add_user_to_database, create_request, add_note_to_ticket, post_error_form
 from update import update_asset, update_customer, update_user, change_ticket_device, change_ticket_customer, change_ticket_user, change_ticket_status, reassign_ticket_user
 from delete import delete_asset_by_id, delete_customer_by_id, delete_user_by_id, delete_ticket_by_id, delete_note_by_id
 
+# Set up new flask app. The application is provided a name equal to the primary file (index). The application is then passed a 
+# secret key from the environment variables set in the terminal running the application
 app = Flask(__name__)
 app.secret_key='56ca809dc0b69a58c4d278ee41b44da5ea645163ec7d3a0ab9a1c37f63aec318d0f775ce8a11e5e336ac6023132bdf242453ed1bb12c8bfac6584f2c77d3d04de8a4149eb29b5f93a8042a397b0143623b3097a6a0d6fe8b0e94fd41f6b9c61d323e82cdcea7c7ddca9eb3460acfa1bc34fa3fd09bd82758a6201172a8479925c2518e014d03230ac75c3889adafae1f43245ceb8aefa488966611066d14854bb1b1cf492fd345b20e533e63688f6ab0c442f104557b1d299981a6a7f9ca3e08985c5623c340147e7ba9cfbb8310ce9ced434c2a4b49d781cbbfe1a7d9ddaea83bb24b5c73cdef0a8773cf2a6265bad46fab6d6ecfa0992dc2fd70b887f32267'
 
+# The following establishes routes for the application. Each @app.route is provided a url endpoint on which to serve its function.
+# All have a condition that will redirect the user to login if their session is not authenticated.
+
+# Base route - This will render the login page if the user is not logged in (prompting them to login). If the user is logged in, 
+# then they are forwarded to home.
 @app.route("/")
 def index():
     if not session.get('logged_in'):
@@ -18,8 +29,11 @@ def index():
     else:
         return redirect(url_for('home'))
 
+# Login Route - This route is for posting the login form. It only takes post requests. If the user is already logged in, then
+# they are forwarded to the home page. If not logged in, then it takes the submitted login form and calls a function to check
+# the provied credentials (function is from the auth module). If valid crede
 @app.route('/login', methods=['POST'])
-def do_admin_login():
+def user_login():
     if not session.get('logged_in'):
         check_credentials(request.form)
     if session.get('logged_in'):
@@ -31,7 +45,6 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('index'))
     else:
-        print("session:", session)
         return render_template("home.html")
 
 @app.route('/logout')
@@ -341,3 +354,30 @@ def close_ticket(ticket_id):
         change_ticket_status(ticket_id, 3)
         add_note_to_ticket({"body": f"Ticket closed by {closing_user['username']}", "created_by": session["user_id"]},ticket_id)
         return redirect(f"/tickets/{ticket_id}")
+
+@app.errorhandler(404)
+def page_not_found(error):
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    return render_template("not_found.html")
+
+
+@app.errorhandler(500)
+def application_error(error):
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    return render_template("application_error.html", failed_request=request)
+
+@app.route("/error", methods=["POST"])
+def send_error_request():
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    if request.method == "POST":
+        response=post_error_form(request.form)
+        return redirect("/home")
+
+@app.errorhandler(405)
+def invalid_method(error):
+    if not session.get("logged_in"):
+        return redirect(url_for('index'))
+    return render_template("invalid_method.html")
