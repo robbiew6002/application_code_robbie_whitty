@@ -1,14 +1,11 @@
 <script>
     function showLogoutPopup() {
         document.getElementById('logout-popup').style.display = 'block';
-
     }
 
     function hideLogoutPopup() {
         document.getElementById('logout-popup').style.display = 'none';
-
     }
-
 </script>
 
 {% if session['auth_level'] == 1 %}
@@ -16,89 +13,20 @@
     <a href="/">Home</a>
     <a href="/assets">View/Search All Assets</a>
     <a href="/customers">View Customers</a>
-    <a href="/create">Create new record</a>
+    <a href="/create">Create New Record</a>
     <a href="/users">User Management</a>
     <a href="/contact">User Requests</a>
     <button onclick="showLogoutPopup()">Logout</button>
 </nav>
-<div id="logout-popup">
-    <button onClick="hideLogoutPopup()">Close</button>
-    <h4>Are you sure you want to logout</p>
-    <a href="/logout"><button>Logout</button></a>
-</div>
-
-<style>
-    nav {
-        width:100%;
-        height:50px;
-        background-color: orange;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        
-    }
-    
-    nav > a {
-        width: calc(100/7);
-        text-align: center;
-    }
-
-    #logout-popup{
-        display: none;
-        position: absolute;
-        border: 1pt black;
-        background-color: grey;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-    
-</style>
 {% elif session['auth_level'] == 2 %}
 <nav>
     <a href="/">Home</a>
     <a href="/assets">View/Search All Assets</a>
     <a href="/customers">View Customers</a>
-    <a href="/create">Create new record</a>
+    <a href="/create">Create New Record</a>
     <a href="/contact">User Requests</a>
     <button onclick="showLogoutPopup()">Logout</button>
 </nav>
-<div id="logout-popup">
-    <button onClick="hideLogoutPopup()">Close</button>
-    <h4>Are you sure you want to logout</p>
-    <a href="/logout"><button>Logout</button></a>
-</div>
-
-<style>
-    nav {
-        width:100%;
-        height:50px;
-        background-color: orange;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        
-    }
-    
-    nav > a {
-        width: calc(100/6);
-        text-align: center;
-    }
-
-    
-    #logout-popup{
-        display: none;
-        position: absolute;
-        border: 1pt black;
-        background-color: grey;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-</style>
 {% else %}
 <nav>
     <a href="/">Home</a>
@@ -106,37 +34,102 @@
     <a href="/contact">Contact</a>
     <button onclick="showLogoutPopup()">Logout</button>
 </nav>
+{% endif %}
+
 <div id="logout-popup">
-    <button onClick="hideLogoutPopup()">Close</button>
-    <h4>Are you sure you want to logout</p>
-    <a href="/logout"><button>Logout</button></a>
+    <div class="popup-content">
+        <button class="close-btn" onclick="hideLogoutPopup()">×</button>
+        <h4>Are you sure you want to logout?</h4>
+        <a href="/logout"><button class="confirm-btn">Logout</button></a>
+    </div>
 </div>
 
 <style>
+    /* Navigation */
     nav {
-        width:100%;
-        height:50px;
-        background-color: orange;
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-wrap: wrap;
         align-items: center;
-        
-    }
-    
-    nav > a {
-        text-align: center;
-        width: calc(100/4);
+        justify-content: space-between;
+        background: #333;
+        padding: 0.5rem 2rem;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
-      #logout-popup{
+    nav a {
+        margin-right: 1.5rem;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    nav a:hover {
+        color: #ffb300;
+    }
+
+    nav button {
+        background: #ffb300;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    nav button:hover {
+        background: #f6bf3e;
+    }
+
+    /* Popup */
+    #logout-popup {
         display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .popup-content {
+        background: #fff;
+        color: #333;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 300px;
+        max-width: 90%;
+        margin: 10% auto;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .popup-content h4 {
+        margin-bottom: 1rem;
+    }
+
+    .popup-content .confirm-btn {
+        background: #d9534f;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .popup-content .confirm-btn:hover {
+        background: #c9302c;
+    }
+
+    .popup-content .close-btn {
         position: absolute;
-        border: 1pt black;
-        background-color: grey;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 10px;
+        right: 15px;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
     }
 </style>
-{% endif %}
