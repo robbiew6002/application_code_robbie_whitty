@@ -43,11 +43,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Download pip
-        run : |
-              apt-get install pip
- #         cache: 'pip'
-
       - name: Create and start virtual environment
         run: |
               source apprenticeship_application/Scripts/activate
