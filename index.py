@@ -2,6 +2,8 @@
 
 # Module Imports - Imports the modules used to run the application.
 # The below modules are installed via pip and are pre-made packages.
+import sys
+sys.path.append('./scripts')
 from flask import Flask, session, redirect, url_for, request, render_template
 from supabaseClient import supabase
 
