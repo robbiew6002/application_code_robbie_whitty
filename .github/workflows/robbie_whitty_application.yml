@@ -42,12 +42,17 @@ jobs:
         uses: actions/setup-python@v3.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
 
- #     - name: Create and start virtual environment
- #       run: |
+      - name: Download pip
+        run : |
+              apt-get install pip
+ #         cache: 'pip'
+
+      - name: Create and start virtual environment
+        run: |
+              source apprenticeship_application/Scripts/activate
+
  #         python -m venv venv
- #         source venv/bin/activate
 
       - name: Install dependencies
         run: pip install -r requirements.txt
