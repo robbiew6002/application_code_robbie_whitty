@@ -105,4 +105,112 @@
         {% endif %}
 {% endif %}
     </div>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f6fa;
+        color: #333;
+    }
+
+    #page {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #header h1 {
+        margin-bottom: 0.5rem;
+        color: grey;
+    }
+
+    #header p {
+        margin-top: 0;
+        color: #666;
+    }
+
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+    }
+
+    input[type="text"],
+    select {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        flex: 1 1 200px;
+        background-color: #fff;
+    }
+
+    button {
+        padding: 0.6rem 1.2rem;
+        background-color: #ffb300;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #f6bf3e;
+    }
+
+    h2 {
+        margin-top: 2rem;
+        color: grey;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    th, td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f0f0f0;
+        font-weight: 600;
+    }
+
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    a {
+        color: grey;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        form {
+            flex-direction: column;
+        }
+
+        input, select, button {
+            width: 100%;
+        }
+    }
+</style>
+
 </html>

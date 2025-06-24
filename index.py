@@ -31,7 +31,8 @@ def index():
 
 # Login Route - This route is for posting the login form. It only takes post requests. If the user is already logged in, then
 # they are forwarded to the home page. If not logged in, then it takes the submitted login form and calls a function to check
-# the provied credentials (function is from the auth module). If valid crede
+# the provied credentials (function is from the auth module). If valid, the user is forwarded to the home page, if not, then they
+# are redirected to the base url (prompting them to login again).
 @app.route('/login', methods=['POST'])
 def user_login():
     if not session.get('logged_in'):
@@ -40,6 +41,7 @@ def user_login():
         return redirect(url_for('home'))
     return redirect(url_for('index'))
 
+# Home Route - This route simply renders the application home page.
 @app.route('/home')
 def home():
     if not session.get('logged_in'):
@@ -47,6 +49,7 @@ def home():
     else:
         return render_template("home.html")
 
+# Logout route - If the user decides to logout, it clears their session and forwards them to the base route.
 @app.route('/logout')
 def logout():
     if not session.get('logged_in'):
@@ -54,7 +57,11 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-
+# Assets Route - This renders a page to display all assets the customer is authorised to view. The viewable assets are
+# dependant on the users associated auth_level. Those with 1 or 2 can see all assets. Those with a different auth level
+# can only see the ones linked to their customer. Additionally, more information about the assets is shown to the higher
+# auth users. The post method is used to operate a filter form, searching for assets within the entire list. On initial
+# load, all viewable assets are present, but the form can be used to filter this list. 
 @app.route('/assets', methods=['GET', 'POST'])
 def assets():
     if not session.get('logged_in'):
@@ -70,37 +77,9 @@ def assets():
                                 device_types=supabase.table("device_types").select("id", "name").execute().data,
                                 statuses=supabase.table("statuses").select("id","value").execute().data)
 
-@app.route('/customers', methods=['GET', 'POST'])
-def customers():
-    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
-            return redirect(url_for('index'))
-    if request.method == 'GET':
-        return render_template("customers.html", results = search_customers({}))
-    if request.method=='POST':
-        return render_template("customers.html", results=search_customers(request.form))
-
-@app.route('/create')
-def create():
-    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
-        return redirect(url_for('index'))
-    return render_template("create.html", customers=supabase.table("customers").select("id","customer_name").execute().data,
-                        device_types=supabase.table("device_types").select("id", "name").execute().data,
-                        statuses=supabase.table("statuses").select("id","value").execute().data)
-
-@app.route('/create/asset', methods=['POST'])
-def create_asset():
-    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
-        return redirect(url_for('index'))
-    new_asset=add_asset_to_database(request.form)
-    return redirect(f"/assets/{new_asset['id']}")
-
-@app.route('/create/customer', methods=['POST'])
-def create_customer():
-    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
-        return redirect(url_for('index'))
-    new_customer=add_customer_to_database(request.form)
-    return redirect(f"/customers/{new_customer['id']}")
-
+# Single Asset Route - This route is used to display information regarding a single asset. It is only viewable to users
+# with an auth level of 1 or 2. A post request can be used to operate a form to change the assets details, updating them
+# in the database. This post request calls a function from the update module to change the assets details before re-rendering
 @app.route('/assets/<asset_id>', methods=['GET', 'POST'])
 def single_asset(asset_id):
     if not session.get('logged_in'):
@@ -119,6 +98,9 @@ def single_asset(asset_id):
         update_asset(asset_details["id"], request.form)
         return redirect(f"/assets/{asset_id}")
 
+# Delete Asset Route - This route is used to delete an asset from the database. It is only usable by a user with
+# 1 or 2 authorisation. The route only operates on a post request before deleting the asset using a function 
+# from the delete module. Once the file is deleted, the user is redirected to the all assets route. 
 @app.route('/assets/<asset_id>/delete', methods=['POST'])
 def delete_asset(asset_id):
     if not session.get('logged_in'):
@@ -129,8 +111,22 @@ def delete_asset(asset_id):
         delete_asset_by_id(asset_id)
         return (redirect('/assets'))
     return (redirect(f'/assets/{asset_id}'))
-    
 
+# Cutomers Route - This route is used to display all customers registered on the system. It is only usable
+# by 1 or 2 auth users. On initial load it displays all customrs, and then has a post method that calls a 
+# function from the search module to filter the customer list displayed. 
+@app.route('/customers', methods=['GET', 'POST'])
+def customers():
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
+            return redirect(url_for('index'))
+    if request.method == 'GET':
+        return render_template("customers.html", results = search_customers({}))
+    if request.method=='POST':
+        return render_template("customers.html", results=search_customers(request.form))
+
+# Single Customer Route - This route displays a page for a single customer. It is only accessible to users
+# with 1 or 2 auth. A form is used to opearate a function from the update module to alter a customers details
+# via a post request. 
 @app.route('/customers/<customer_id>', methods=['GET', 'POST'])
 def single_customer(customer_id):
     if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
@@ -148,6 +144,9 @@ def single_customer(customer_id):
         update_customer(customer_details["id"], request.form)
         return redirect(f"/customers/{customer_id}")
 
+# Delete Customer Route - This route is used to delete an customer from the database. It is only usable by a user with
+# 1 or 2 authorisation. The route only operates on a post request before deleting the customer using a function 
+# from the delete module. Once the file is deleted, the user is redirected to the all customers route. 
 @app.route('/customers/<customer_id>/delete', methods=['POST'])
 def delete_customer(customer_id):
     if not session.get('logged_in') or (session["auth_level"] != 1 and session["auth_level"] != 2):
@@ -158,6 +157,40 @@ def delete_customer(customer_id):
         return (redirect('/customers'))
     return (redirect(f'/customers/{customer_id}'))
 
+# Create Page Route - This renders a page with two html forms, one for creating a new customer and one for creating
+# a new asset. The differnet forms will send a post request to a different endpoint. All create routes are only accessible to
+# 1 or 2 auth users. 
+@app.route('/create')
+def create():
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
+        return redirect(url_for('index'))
+    return render_template("create.html", customers=supabase.table("customers").select("id","customer_name").execute().data,
+                        device_types=supabase.table("device_types").select("id", "name").execute().data,
+                        statuses=supabase.table("statuses").select("id","value").execute().data)
+
+# Create Asset Function - This route is used for a post request to create a new asset. A function is called from the create
+# module to create a new asset within the database. Once created, the user is redirected to the single asset page for the 
+# new asset.
+@app.route('/create/asset', methods=['POST'])
+def create_asset():
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
+        return redirect(url_for('index'))
+    new_asset=add_asset_to_database(request.form)
+    return redirect(f"/assets/{new_asset['id']}")
+
+# Create Customer Function - This route is used for a post request to create a new customer. A function is called from the create
+# module to create a new customer within the database. Once created, the user is redirected to the single customer page for the 
+# new customer.
+@app.route('/create/customer', methods=['POST'])
+def create_customer():
+    if not session.get('logged_in') or (session['auth_level'] != 2 and session['auth_level'] != 1):
+        return redirect(url_for('index'))
+    new_customer=add_customer_to_database(request.form)
+    return redirect(f"/customers/{new_customer['id']}")
+
+# Users Route - This route renders a page to display all the users who are logged on the system. All user routes are only accessable to users with
+# level 1 auth. An http post request is used off of a form on the page to call a function from the search module. This filters the users
+# retrned on the page.
 @app.route('/users', methods=['GET', 'POST'])
 def users():
     if not session.get('logged_in') or session['auth_level'] != 1:
@@ -171,6 +204,8 @@ def users():
         user_array=return_users(search_dict)
         return render_template("user_management.html",users=user_array)
 
+# Single User Route - This route displays a page for a single user. A form is used to opearate a function from the update 
+# module to alter a users details via a post request. 
 @app.route('/users/<user_id>', methods=['GET', 'POST'])
 def single_user(user_id):
     if not session.get('logged_in') or session['auth_level'] != 1:
@@ -186,6 +221,9 @@ def single_user(user_id):
         update_user(user_id, request.form)
         return redirect(f'/users/{user_id}')
 
+# Create User Route - This route displays a page to create a new user. An http form is used to send a post request
+# that triggers a function from the create module to add the new user to the database. Once created, the user is redirected
+# to the single user page for the new user they have created. 
 @app.route('/users/create', methods=['GET', 'POST'])
 def create_user():
     if not session.get('logged_in') or session['auth_level'] != 1:
