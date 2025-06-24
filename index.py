@@ -47,7 +47,9 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('index'))
     else:
-        return render_template("home.html")
+        active_tickets=search_for_tickets({"status_id": 1, "user_id":""})
+        print(active_tickets)
+        return render_template("home.html", session_details=session, tickets=active_tickets)
 
 # Logout route - If the user decides to logout, it clears their session and forwards them to the base route.
 @app.route('/logout')
@@ -253,7 +255,6 @@ def user_requests():
     if request.method == "GET":
         if session["auth_level"] == 1 or session["auth_level"] == 2:
             tickets=return_all_tickets()
-            print(supabase.table("request_statuses").select("id, Value").execute().data)
             return render_template("contact.html", assets=supabase.table("devices").select("id, hostname").execute().data, 
             customers=supabase.table("customers").select("id", "customer_name").execute().data, statuses=supabase.table("request_statuses").select("id, Value").execute().data,
             devices=supabase.table("devices").select("id, hostname").execute().data ,results=tickets ,request_created=False)
