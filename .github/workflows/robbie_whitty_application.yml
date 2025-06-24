@@ -63,7 +63,7 @@ jobs:
             !venv/
       - name: Run app
         run: | 
-              Flask --app index.py run
+              flask --app index.py run
 
   deploy:
     permissions:
